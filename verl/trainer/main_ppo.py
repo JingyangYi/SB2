@@ -151,11 +151,15 @@ class TaskRunner:
         else:
             raise NotImplementedError
 
-        compute_score = get_custom_reward_fn(config)
-        reward_fn = reward_manager_cls(tokenizer=tokenizer, num_examine=0, compute_score=compute_score)
+        train_batch_size = config.data.train_batch_size
+        num_generation = config.actor_rollout_ref.rollout.n
+        compute_score = get_custom_reward_fn(config)  # should be None
+        reward_fn = reward_manager_cls(tokenizer=tokenizer, num_examine=0, 
+                                       train_batch_size=train_batch_size, num_generation=num_generation, compute_score=compute_score)
 
         # Note that we always use function-based RM for validation
-        val_reward_fn = reward_manager_cls(tokenizer=tokenizer, num_examine=1, compute_score=compute_score)
+        val_reward_fn = reward_manager_cls(tokenizer=tokenizer, num_examine=1, 
+                                        train_batch_size=train_batch_size, num_generation=num_generation, compute_score=compute_score)
 
         resource_pool_manager = ResourcePoolManager(resource_pool_spec=resource_pool_spec, mapping=mapping)
 
